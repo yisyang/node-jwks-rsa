@@ -25,6 +25,8 @@ npm install --save jwks-rsa
 
 Supports all currently registered JWK types and JWS Algorithms, see [panva/jose#262](https://github.com/panva/jose/issues/262) for more information.
 
+Note latest version will require node@^20.19.0 or node@^22.12.0 or newer.
+
 ### Configure the client
 
 Provide a JWKS endpoint which exposes your signing keys.
