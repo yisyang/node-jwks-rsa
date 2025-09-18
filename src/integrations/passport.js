@@ -28,24 +28,36 @@ module.exports.passportJwtSecret = function (options) {
   const onError = options.handleSigningKeyError || handleSigningKeyError;
 
   return function secretProvider(req, rawJwtToken, cb) {
-    let decoded;
+    let header;
     try {
-      decoded = {
-        payload: jose.decodeJwt(rawJwtToken),
-        header: jose.decodeProtectedHeader(rawJwtToken)
-      };
-    } catch (err) {
-      decoded = null;
+      header = jose.decodeProtectedHeader(rawJwtToken);
+    } catch (_) {
+      return cb(new Error('jwt malformed'), null);
     }
 
-    if (!decoded || !supportedAlg.includes(decoded.header.alg)) {
+    if (!header || !supportedAlg.includes(header.alg)) {
       return cb(null, null);
     }
 
-    client.getSigningKey(decoded.header.kid)
-      .then(key => {
-        cb(null, key.publicKey || key.rsaPublicKey);
-      }).catch(err => {
+    client.getSigningKey(header.kid)
+      .then(async key => {
+        const pem = key.publicKey || key.rsaPublicKey;
+        const alg = header.alg;
+        try {
+          // Try to import and verify first (defense in depth). If import fails, fall back to returning PEM (legacy behavior).
+          let verifyKey;
+          try {
+            verifyKey = await jose.importSPKI(pem, alg);
+          } catch (_) {
+            return cb(null, pem);
+          }
+          await jose.jwtVerify(rawJwtToken, verifyKey, { algorithms: [ alg ] });
+          return cb(null, pem);
+        } catch (_) {
+          return cb(new Error('invalid signature'));
+        }
+      })
+      .catch(err => {
         onError(err, (newError) => cb(newError, null));
       });
   };

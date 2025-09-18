@@ -377,4 +377,61 @@ describe('passportJwtSecret', () => {
         done();
       });
   });
+
+  it('should not authenticate the user if token payload is tampered after signing', done => {
+    const app = new Express();
+    passport.use(
+      new JwtStrategy(
+        {
+          secretOrKeyProvider: jwksRsa.passportJwtSecret({
+            jwksUri: 'http://localhost/.well-known/jwks.json'
+          }),
+          jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken()
+        },
+        (jwt_payload, doneStrategy) => {
+          doneStrategy(null, jwt_payload);
+        }
+      )
+    );
+
+    let expectedFlashMessage;
+    app.get(
+      '/',
+      (req, res, next) => {
+        req.flash = (type, msg) => { expectedFlashMessage = msg; };
+        next();
+      },
+      passport.authenticate('jwt', { session: false, failureFlash: true }),
+      (req, res) => {
+        res.send('OK');
+      }
+    );
+
+    // Create a valid token first.
+    const token = createToken(privateKey, '123', { sub: 'john' });
+    // JWKS endpoint serves the matching public key.
+    jwksEndpoint('http://localhost', [ { pub: publicKey, kid: '123' } ]);
+
+    // Tamper with payload (change sub) without resigning -> invalid signature.
+    const parts = token.split('.');
+    const rawPayload = parts[1].replace(/-/g, '+').replace(/_/g, '/');
+    const payloadObj = JSON.parse(Buffer.from(rawPayload, 'base64').toString('utf8'));
+    payloadObj.sub = 'mallory';
+    const newPayload = Buffer.from(JSON.stringify(payloadObj))
+      .toString('base64')
+      .replace(/=/g, '')
+      .replace(/\+/g, '-')
+      .replace(/\//g, '_');
+    parts[1] = newPayload;
+    const tamperedToken = parts.join('.');
+
+    request(app.listen())
+      .get('/')
+      .set('Authorization', `Bearer ${tamperedToken}`)
+      .expect(401)
+      .end(() => {
+        expect(expectedFlashMessage).to.equal('invalid signature');
+        done();
+      });
+  });
 });

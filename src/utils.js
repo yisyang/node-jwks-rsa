@@ -47,19 +47,11 @@ async function retrieveSigningKeys(jwks) {
       if (key.type !== 'public') {
         continue;
       }
-      let getSpki;
-      switch (key[Symbol.toStringTag]) {
-        case 'CryptoKey': {
-          const spki = await jose.exportSPKI(key);
-          getSpki = () => spki;
-          break;
-        }
-        case 'KeyObject':
-          // Assume legacy Node.js version without the Symbol.toStringTag backported
-          // Fall through
-        default:
-          getSpki = () => key.export({ format: 'pem', type: 'spki' });
-      }
+
+      // Aside from symmetric keys (kty: "oct"), previously filtered out, jose 6+ always returns CryptoKey objects
+      const spkiPem = await jose.exportSPKI(key);
+      const getSpki = () => spkiPem;
+
       results.push({
         get publicKey() { return getSpki(); },
         get rsaPublicKey() { return getSpki(); },
@@ -67,7 +59,7 @@ async function retrieveSigningKeys(jwks) {
         ...(typeof jwk.kid === 'string' && jwk.kid ? { kid: jwk.kid } : undefined),
         ...(typeof jwk.alg === 'string' && jwk.alg ? { alg: jwk.alg } : undefined)
       });
-    } catch (err) {
+    } catch (_) {
       continue;
     }
   }
@@ -75,6 +67,4 @@ async function retrieveSigningKeys(jwks) {
   return results;
 }
 
-module.exports = {
-  retrieveSigningKeys
-};
+module.exports = { retrieveSigningKeys };
