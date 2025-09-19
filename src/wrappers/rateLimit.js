@@ -1,8 +1,7 @@
 import createDebug from 'debug';
-import limiterPkg from 'limiter';
+import { RateLimiter } from 'limiter';
 import JwksRateLimitError from '../errors/JwksRateLimitError.js';
 
-const { RateLimiter } = limiterPkg;
 const logger = createDebug('jwks');
 function rateLimitWrapper(client, { jwksRequestsPerMinute = 10 }) {
   const getSigningKey = client.getSigningKey.bind(client);
