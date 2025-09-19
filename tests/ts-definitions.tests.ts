@@ -1,4 +1,3 @@
-import * as jwksRsaType from '../index.js';
 import { expect } from 'chai';
 import expressjwt6 from 'express-jwt-v6';
 import { expressjwt as expressjwt7, GetVerificationKey } from 'express-jwt-v7';
@@ -6,15 +5,16 @@ import { jwksEndpoint } from './mocks/jwks.js';
 import { publicKey } from './mocks/keys.js';
 import { x5cSingle } from './keys.js';
 import jwksRsaDefault from '../src/index.js';
+import type { JWKSRSAModule } from '../index.js';
 
-const jwksRsa: typeof jwksRsaType = jwksRsaDefault as any;
+const jwksRsa: JWKSRSAModule = jwksRsaDefault;
 
 describe('typescript definition', () => {
   const jwksHost = 'http://localhost';
 
   describe('hapiJwt2KeyAsync', () => {
     it('should return a secret provider function', async () => {
-      jwksEndpoint(jwksHost,  [ { pub: publicKey, kid: '123' } ])
+      jwksEndpoint(jwksHost,  [ { pub: publicKey, kid: '123' } ]);
 
       const secretProvider = jwksRsa.hapiJwt2KeyAsync({
         jwksUri: `${jwksHost}/.well-known/jwks.json`
@@ -41,19 +41,19 @@ describe('typescript definition', () => {
 
   it('Types-Only Validation with express-jwt', () => {
     expressjwt6({
-      algorithms: ["RS256"],
+      algorithms: [ 'RS256' ],
       secret: jwksRsa.expressJwtSecret({
         cache: true,
-        jwksUri: `https://my-authz-server/.well-known/jwks.json`
+        jwksUri: 'https://my-authz-server/.well-known/jwks.json'
       })
     });
 
     expressjwt7({
-      algorithms: ['RS256'],
+      algorithms: [ 'RS256' ],
       secret: jwksRsa.expressJwtSecret({
         cache: true,
-        jwksUri: `https://my-authz-server/.well-known/jwks.json`
+        jwksUri: 'https://my-authz-server/.well-known/jwks.json'
       }) as GetVerificationKey
     });
-  })
+  });
 });

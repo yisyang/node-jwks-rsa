@@ -29,6 +29,7 @@
     "@types/express-jwt-v6": "npm:@types/express-jwt@^6.0.4",
     "@types/mocha": "^10.0.3",
     "@types/node": "^20.19.17",
+    "@typescript-eslint/eslint-plugin": "^8.44.0",
     "chai": "^4.3.10",
     "chai-as-promised": "^7.1.1",
     "eslint": "^8.52.0",

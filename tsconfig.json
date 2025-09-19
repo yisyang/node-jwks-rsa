@@ -7,6 +7,7 @@
     "moduleResolution": "NodeNext",
     "forceConsistentCasingInFileNames": true,
     "strict": true,
+    "skipLibCheck": true,
     "noEmit": false,
     "noFallthroughCasesInSwitch": true,
     "noImplicitAny": true,
@@ -16,10 +17,17 @@
     "noUnusedParameters": true,
     "strictNullChecks": true,
     "esModuleInterop": true,
+    "allowJs": true,
+    "checkJs": false,
     "outDir": "ts-output"
   },
   "include": [
     "index.d.ts",
-    "tests/**/*.tests.ts"
+    "tests/**/*.tests.ts",
+    "tests/**/*.js"
+  ],
+  "exclude": [
+    "node_modules",
+    "ts-output"
   ]
 }

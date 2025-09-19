@@ -15,9 +15,9 @@ const handleSigningKeyError = (err, cb) => {
 };
 
 /**
- * Call hapiJwt2Key as a Promise
- * @param {object} options 
- * @returns {Promise}
+ * Wraps hapiJwt2Key with a Promise-based provider.
+ * @param {object} options
+ * @returns {(decoded: { header: { alg: string, kid: string } }) => Promise<{ key: string }>}
  */
 export function hapiJwt2KeyAsync(options) {
   const secretProvider = hapiJwt2Key(options);
