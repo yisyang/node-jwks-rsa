@@ -1,7 +1,7 @@
-const jose = require('jose');
-const { ArgumentError } = require('../errors');
-const { JwksClient } = require('../JwksClient');
-const supportedAlg = require('./config');
+import * as jose from 'jose';
+import { ArgumentError } from '../errors/index.js';
+import { JwksClient } from '../JwksClient.js';
+import supportedAlg from './config.js';
 
 const handleSigningKeyError = (err, cb) => {
   // If we didn't find a match, can't provide a key.
@@ -15,7 +15,7 @@ const handleSigningKeyError = (err, cb) => {
   }
 };
 
-module.exports.passportJwtSecret = function (options) {
+export function passportJwtSecret(options) {
   if (options === null || options === undefined) {
     throw new ArgumentError('An options object must be provided when initializing passportJwtSecret');
   }
@@ -61,4 +61,4 @@ module.exports.passportJwtSecret = function (options) {
         onError(err, (newError) => cb(newError, null));
       });
   };
-};
+}

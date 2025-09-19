@@ -2,10 +2,15 @@
   "name": "jwks-rsa",
   "version": "3.2.0",
   "description": "Library to retrieve RSA public keys from a JWKS endpoint",
+  "type": "module",
   "main": "src/index.js",
+  "exports": {
+    ".": "./src/index.js"
+  },
   "files": [
     "src",
-    "index.d.ts"
+    "index.d.ts",
+    "index.js"
   ],
   "types": "index.d.ts",
   "engines": {
@@ -24,6 +29,7 @@
     "@types/express-jwt-v6": "npm:@types/express-jwt@^6.0.4",
     "@types/mocha": "^10.0.3",
     "@types/node": "^20.19.17",
+    "@typescript-eslint/eslint-plugin": "^8.44.0",
     "chai": "^4.3.10",
     "chai-as-promised": "^7.1.1",
     "eslint": "^8.52.0",
@@ -48,7 +54,7 @@
   "scripts": {
     "clean:ts": "rimraf ts-output/",
     "lint": "eslint ./src ./tests",
-    "test:ts": "npm run clean:ts && tsc && NODE_ENV=test mocha --exit --timeout 5000 $(find ./ts-output -name *.tests.js)",
+    "test:ts": "npm run clean:ts && tsc && bash -c \"cat > ts-output/index.js <<'EOF'\nexport * from '../src/index.js';\nimport def from '../src/index.js';\nexport default def;\nEOF\" && NODE_ENV=test mocha --exit --timeout 5000 $(find ./ts-output -name *.tests.js)",
     "test:js": "NODE_ENV=test mocha --exit --timeout 5000 $(find ./tests -name *.tests.js)",
     "test": "npm run test:js && npm run test:ts",
     "test:ci": "nyc --reporter=lcov npm test",
@@ -69,5 +75,6 @@
   "bugs": {
     "url": "https://github.com/auth0/node-jwks-rsa/issues"
   },
-  "homepage": "https://github.com/auth0/node-jwks-rsa#readme"
+  "homepage": "https://github.com/auth0/node-jwks-rsa#readme",
+  "packageManager": "yarn@3.5.0+sha512.2dc70be5fce9f66756d25b00a888f3ca66f86b502b76750e72ba54cec89da767b938c54124595e26f868825688e0fe3552c26c76a330673343057acadd5cfcf2"
 }

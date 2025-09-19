@@ -1,5 +1,9 @@
-const jose = require('jose');
-const JwksError = require('./errors/JwksError');
+import { webcrypto } from 'crypto';
+if (!globalThis.crypto) {
+  globalThis.crypto = webcrypto;
+}
+import { importJWK, exportSPKI } from 'jose';
+import JwksError from './errors/JwksError.js';
 
 function resolveAlg(jwk) {
   if (jwk.alg) {
@@ -43,13 +47,9 @@ async function retrieveSigningKeys(jwks) {
 
   for (const jwk of jwks) {
     try {
-      const key = await jose.importJWK({ ...jwk, ext: true }, resolveAlg(jwk));
-      if (key.type !== 'public') {
-        continue;
-      }
-
-      // Aside from symmetric keys (kty: "oct"), previously filtered out, jose 6+ always returns CryptoKey objects
-      const spkiPem = await jose.exportSPKI(key);
+      const key = await importJWK({ ...jwk, ext: true }, resolveAlg(jwk));
+      if (key.type !== 'public') continue;
+      const spkiPem = await exportSPKI(key);
       const getSpki = () => spkiPem;
 
       results.push({
@@ -67,4 +67,4 @@ async function retrieveSigningKeys(jwks) {
   return results;
 }
 
-module.exports = { retrieveSigningKeys };
+export { retrieveSigningKeys };

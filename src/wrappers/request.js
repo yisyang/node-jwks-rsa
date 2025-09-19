@@ -1,8 +1,8 @@
-const http = require('http');
-const https = require('https');
-const urlUtil = require('url');
+import http from 'http';
+import https from 'https';
+import urlUtil from 'url';
 
-module.exports.default =  (options) => {
+const request = (options) => {
   if (options.fetcher) {
     return options.fetcher(options.uri);
   }
@@ -50,3 +50,5 @@ module.exports.default =  (options) => {
       .end();
   });
 };
+
+export default request;

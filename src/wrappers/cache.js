@@ -1,7 +1,8 @@
-const logger = require('debug')('jwks');
-const memoizer = require('lru-memoizer');
-const { promisify, callbackify } = require('util');
+import createDebug from 'debug';
+import memoizer from 'lru-memoizer';
+import { promisify, callbackify } from 'util';
 
+const logger = createDebug('jwks');
 function cacheWrapper(client, { cacheMaxEntries = 5, cacheMaxAge = 600000 }) {
   logger(`Configured caching of signing keys. Max: ${cacheMaxEntries} / Age: ${cacheMaxAge}`);
   return promisify(memoizer({
@@ -11,5 +12,4 @@ function cacheWrapper(client, { cacheMaxEntries = 5, cacheMaxAge = 600000 }) {
     max: cacheMaxEntries
   }));
 }
-
-module.exports.default = cacheWrapper;
+export default cacheWrapper;
