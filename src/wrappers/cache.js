@@ -1,5 +1,5 @@
 import createDebug from 'debug';
-import * as memoizer from 'lru-memoizer';
+import memoizer from 'lru-memoizer';
 import { promisify, callbackify } from 'util';
 
 const logger = createDebug('jwks');
