@@ -51,6 +51,36 @@ const key = await client.getSigningKey(kid);
 const signingKey = key.getPublicKey();
 ````
 
+## Known Issues
+
+### Workaround Jest ESM issue
+
+Downstream repositories using Jest may not support ESM fully.
+
+One way to work around this issue is to add the following to your `jest.config.ts`:
+
+```
+  moduleNameMapper: {
+    '^jwks-rsa$': '<rootDir>/__mocks__/jwks-rsa.ts',
+  },
+```
+
+and add the `__mocks__/jwks-rsa.ts` file with the following content:
+
+```ts
+// Provide a fake implementation of the secret provider, repeat for other methods that your app imports from jwks-rsa
+export const passportJwtSecret = jest.fn(() => {
+  // return a fake key provider function
+  return (req: any, header: any, cb: any) => {
+    cb(null, 'fake-secret')
+  }
+})
+
+export default {
+  passportJwtSecret,
+}
+```
+
 ## Feedback
 
 ### Contributing
