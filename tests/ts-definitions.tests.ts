@@ -1,11 +1,13 @@
-import * as jwksRsaType from '../index';
-import {expect} from 'chai';
-import expressjwt6 from "express-jwt-v6";
-import { expressjwt as expressjwt7, GetVerificationKey } from "express-jwt-v7";
-const { jwksEndpoint } = require('../tests/mocks/jwks');
-const { publicKey } = require('../tests/mocks/keys');
-const { x5cSingle } = require('../tests/keys.js');
-const jwksRsa: typeof jwksRsaType = require('../src');
+import * as jwksRsaType from '../index.js';
+import { expect } from 'chai';
+import expressjwt6 from 'express-jwt-v6';
+import { expressjwt as expressjwt7, GetVerificationKey } from 'express-jwt-v7';
+import { jwksEndpoint } from './mocks/jwks.js';
+import { publicKey } from './mocks/keys.js';
+import { x5cSingle } from './keys.js';
+import jwksRsaDefault from '../src/index.js';
+
+const jwksRsa: typeof jwksRsaType = jwksRsaDefault as any;
 
 describe('typescript definition', () => {
   const jwksHost = 'http://localhost';

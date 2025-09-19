@@ -1,16 +1,12 @@
-const request = require('supertest');
-const { expect } = require('chai');
-
-const { jwksEndpoint } = require('./mocks/jwks');
-const { publicKey, privateKey, randomPublicKey1 } = require('./mocks/keys');
-const { createToken, createSymmetricToken } = require('./mocks/tokens');
-
-const Express = require('express');
-const passport = require('passport');
-const JwtStrategy = require('passport-jwt').Strategy;
-const ExtractJwt = require('passport-jwt').ExtractJwt;
-
-const jwksRsa = require('../src');
+import request from 'supertest';
+import { expect } from 'chai';
+import { jwksEndpoint } from './mocks/jwks.js';
+import { publicKey, privateKey, randomPublicKey1 } from './mocks/keys.js';
+import { createToken, createSymmetricToken } from './mocks/tokens.js';
+import Express from 'express';
+import passport from 'passport';
+import { Strategy as JwtStrategy, ExtractJwt } from 'passport-jwt';
+import jwksRsa from '../src/index.js';
 
 describe('passportJwtSecret', () => {
   it('should throw error if options is null', () => {

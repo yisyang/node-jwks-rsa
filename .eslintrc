@@ -1,7 +1,10 @@
 {
   "parserOptions": {
-    "ecmaVersion": 2018
+    "ecmaVersion": 2020,
+    "sourceType": "module",
+    "project": "./tsconfig.json"
   },
+  "extends": "eslint:recommended",
   "rules": {
     "array-bracket-spacing": [2, "always"],
     "comma-dangle": [2, "never"],
@@ -23,7 +26,6 @@
   "env": {
     "node": true,
     "mocha": true,
-    "es6": true
-  },
-  "extends": "eslint:recommended"
+    "es2020": true
+  }
 }
